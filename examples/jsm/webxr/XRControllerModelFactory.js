@@ -13,7 +13,12 @@ import {
 	MotionController
 } from '../libs/motion-controllers.module.js';
 
-const DEFAULT_PROFILES_PATH = 'https://cdn.jsdelivr.net/npm/@webxr-input-profiles/assets@1.0/dist/profiles';
+/*
+	Forked to replace CDN profiles path with local copy for offline testing.
+	- SMC 6/2021
+*/
+
+const DEFAULT_PROFILES_PATH = './profiles';
 const DEFAULT_PROFILE = 'generic-trigger';
 
 class XRControllerModel extends Object3D {

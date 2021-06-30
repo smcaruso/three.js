@@ -1,3 +1,10 @@
+import { VRPawn } from "./VRPawn"; // app-specific WebXR movement class
+
+/*
+Changes from main three.js repo replace default CSS styling with app & site-specific styles.
+- SMC 6/2021
+*/
+
 class VRButton {
 
 	static createButton( renderer, options ) {
@@ -19,7 +26,7 @@ class VRButton {
 				session.addEventListener( 'end', onSessionEnded );
 
 				await renderer.xr.setSession( session );
-				button.textContent = 'EXIT VR';
+				button.textContent = 'Exit VR';
 
 				currentSession = session;
 
@@ -29,7 +36,7 @@ class VRButton {
 
 				currentSession.removeEventListener( 'end', onSessionEnded );
 
-				button.textContent = 'ENTER VR';
+				button.textContent = 'Enter VR';
 
 				currentSession = null;
 
@@ -40,20 +47,21 @@ class VRButton {
 			button.style.display = '';
 
 			button.style.cursor = 'pointer';
-			button.style.left = 'calc(50% - 50px)';
-			button.style.width = '100px';
+			button.style.left = '25%';
+			button.style.width = '50%';
+			button.style.height = "100px;"
 
-			button.textContent = 'ENTER VR';
+			button.textContent = 'Enter VR';
 
 			button.onmouseenter = function () {
 
-				button.style.opacity = '1.0';
+				button.style.background = 'rgb(180, 10, 10)';
 
 			};
 
 			button.onmouseleave = function () {
 
-				button.style.opacity = '0.5';
+				button.style.background = 'rgb(255, 50, 50)';
 
 			};
 
@@ -68,7 +76,7 @@ class VRButton {
 					// ('local' is always available for immersive sessions and doesn't need to
 					// be requested separately.)
 
-					const sessionInit = { optionalFeatures: [ 'local-floor', 'bounded-floor', 'hand-tracking', 'layers' ] };
+					const sessionInit = { optionalFeatures: [ 'local-floor', 'bounded-floor', 'hand-tracking' ] };
 					navigator.xr.requestSession( 'immersive-vr', sessionInit ).then( onSessionStarted );
 
 				} else {
@@ -86,8 +94,10 @@ class VRButton {
 			button.style.display = '';
 
 			button.style.cursor = 'auto';
-			button.style.left = 'calc(50% - 75px)';
-			button.style.width = '150px';
+			button.style.left = '25%';
+			button.style.width = '50%';
+			button.style.background = 'rgb(100, 100, 100)';
+			element.style.setProperty("box-shadow", "0.25em 0.25em 0.5em rgba(0, 0, 0, 0.5)");
 
 			button.onmouseenter = null;
 			button.onmouseleave = null;
@@ -100,22 +110,24 @@ class VRButton {
 
 			disableButton();
 
-			button.textContent = 'VR NOT SUPPORTED';
+			button.innerHTML = 'VR not supported, try <a href="https://www.smcaruso.com/">smcaruso.com</a>';
 
 		}
 
 		function stylizeElement( element ) {
 
 			element.style.position = 'absolute';
-			element.style.bottom = '20px';
-			element.style.padding = '12px 6px';
-			element.style.border = '1px solid #fff';
-			element.style.borderRadius = '4px';
-			element.style.background = 'rgba(0,0,0,0.1)';
-			element.style.color = '#fff';
-			element.style.font = 'normal 13px sans-serif';
+			element.style.left = '25%';
+			element.style.width = '50%';
+			element.style.bottom = '1em';
+			element.style.border = 'none';
+			element.style.background = 'rgb(255, 50, 50)';
+			element.style.color = 'rgb(255, 255, 255)';
+			element.style.setProperty("font-size", "200%");
+			element.style.setProperty("font-weight", "800");
+			element.style.setProperty("box-shadow", "0.25em 0.25em 0.5em rgba(0, 0, 0, 0.5)");
+			element.style.padding = '0.5em';
 			element.style.textAlign = 'center';
-			element.style.opacity = '0.5';
 			element.style.outline = 'none';
 			element.style.zIndex = '999';
 
@@ -141,22 +153,22 @@ class VRButton {
 			const message = document.createElement( 'a' );
 
 			if ( window.isSecureContext === false ) {
-
+				
 				message.href = document.location.href.replace( /^http:/, 'https:' );
-				message.innerHTML = 'WEBXR NEEDS HTTPS'; // TODO Improve message
+				message.innerHTML = 'WebXR requires HTTPS'; // TODO Improve message
 
 			} else {
 
 				message.href = 'https://immersiveweb.dev/';
-				message.innerHTML = 'WEBXR NOT AVAILABLE';
+				message.innerHTML = 'VR not supported, try <a href="https://www.smcaruso.com/">smcaruso.com</a>';
+
 
 			}
 
-			message.style.left = 'calc(50% - 90px)';
-			message.style.width = '180px';
 			message.style.textDecoration = 'none';
 
 			stylizeElement( message );
+			message.style.background = 'rgb(100, 100, 100)';
 
 			return message;
 
