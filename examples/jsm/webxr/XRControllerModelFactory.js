@@ -3,15 +3,15 @@ import {
 	MeshBasicMaterial,
 	Object3D,
 	SphereGeometry,
-} from '../../../build/three.module.js';
+} from 'three/build/three.module.js';
 
-import { GLTFLoader } from '../loaders/GLTFLoader.js';
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader";
 
 import {
 	Constants as MotionControllerConstants,
 	fetchProfile,
 	MotionController
-} from '../libs/motion-controllers.module.js';
+} from 'three/examples/jsm/libs/motion-controllers.module.js';
 
 /*
 	Forked to replace CDN profiles path with local copy for offline testing.
