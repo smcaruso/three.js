@@ -12,13 +12,14 @@ import {
 	fetchProfile,
 	MotionController
 } from 'three/examples/jsm/libs/motion-controllers.module.js';
+import { keys } from 'lodash';
 
 /*
 	Forked to replace CDN profiles path with local copy for offline testing.
 	- SMC 6/2021
 */
 
-const DEFAULT_PROFILES_PATH = './profiles';
+const DEFAULT_PROFILES_PATH = './profiles'; // LOCAL RELATIVE PATH
 const DEFAULT_PROFILE = 'generic-trigger';
 
 class XRControllerModel extends Object3D {
@@ -211,17 +212,17 @@ function addAssetSceneToControllerModel( controllerModel, scene ) {
 
 class XRControllerModelFactory {
 
-	constructor( gltfLoader = null ) {
-
-		this.gltfLoader = gltfLoader;
+	constructor(parentPawn) {
+		
+		this.pawn = parentPawn;
+		this.gltfLoader = this.pawn.app.loaders.gltf;
 		this.path = DEFAULT_PROFILES_PATH;
 		this._assetCache = {};
 
 		// If a GLTFLoader wasn't supplied to the constructor create a new one.
 		if ( ! this.gltfLoader ) {
-
 			this.gltfLoader = new GLTFLoader();
-
+			console.log("Wasting memory!");
 		}
 
 	}
@@ -245,12 +246,13 @@ class XRControllerModelFactory {
 					assetPath
 				);
 
+				this.populateControlMap(profile);
+
 				const cachedAsset = this._assetCache[ controllerModel.motionController.assetUrl ];
 				if ( cachedAsset ) {
 
 					scene = cachedAsset.scene.clone();
-
-					addAssetSceneToControllerModel( controllerModel, scene );
+					addAssetSceneToControllerModel(controllerModel, scene);
 
 				} else {
 
@@ -266,9 +268,8 @@ class XRControllerModelFactory {
 						this._assetCache[ controllerModel.motionController.assetUrl ] = asset;
 
 						scene = asset.scene.clone();
-
 						addAssetSceneToControllerModel( controllerModel, scene );
-
+						
 					},
 					null,
 					() => {
@@ -296,6 +297,46 @@ class XRControllerModelFactory {
 		} );
 
 		return controllerModel;
+
+	}
+	/*
+		Custom keymap function
+		- SMC 6/21
+	*/
+
+	populateControlMap(profile) {
+
+		if (Object.keys(this.pawn.ControllerMap).length > 0) {
+			return;
+		}
+
+		let keymap = {};
+		Object.values(profile.layouts).forEach(
+			function(layout) {
+				let hand;
+				if (layout.rootNodeName.includes("left")) {
+					keymap.left = {};
+					hand = keymap.left;
+				} else { 
+					keymap.right = {}; 
+					hand = keymap.right;
+				}
+				Object.values(layout.components).forEach(
+					function(component) {
+						Object.keys(component.gamepadIndices).forEach(
+							function(key) {
+								if (key.includes("button")) {
+									hand[component.rootNodeName] = component.gamepadIndices[key];
+								} else {
+									hand[component.rootNodeName + key] = component.gamepadIndices[key];
+								}
+							}
+						)
+
+				});
+		});
+		
+		this.pawn.ControllerMap = keymap;
 
 	}
 
